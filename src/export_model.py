@@ -2,7 +2,6 @@ import torch
 from src.model import SimpleClassifier
 from pathlib import Path
 
-
 def export_model():
     # 1. Skapa modellen
     model = SimpleClassifier()
