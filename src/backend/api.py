@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.backend.schemas import PredictRequest, PredictResponse
+from src.backend.schemas import PredictRequest, PredictResponse, Prediction
 from src.backend.service import decode_image_b64, predict_image, MODEL_VERSION
 
 router = APIRouter()
