@@ -1,26 +1,25 @@
-from fastapi import FastAPI 
-# from src.utils.constants import MODEL_PATH
-from schemas import PredictRequest, PredictResponse
-from service import decode_image_b64, predict_stub, MODEL_VERSION
+from fastapi import APIRouter
+from src.backend.schemas import PredictRequest, PredictResponse
+from src.backend.service import decode_image_b64, predict_image, MODEL_VERSION
 
-app = FastAPI(title="CIFAR10 API")
+router = APIRouter()
 
-images_data = []
+@router.post("/predict", response_model=PredictResponse)
+def predict(request: PredictRequest):
 
-@app.get("/images/")
-async def load_images():
-    return images_data
+    predictions = []
 
-@app.post("/images/predict", response_model=PredictResponse)
-def predict_images(req: PredictRequest) -> PredictResponse:
-    # 1) "Packa upp" alla bilder: base64 -> bytes
-    decoded = [decode_image_b64(img.image_b64) for img in req.images]
+    for image_payload in request.images:
+        image_bytes = decode_image_b64(image_payload.image_b64)
+        result = predict_image(image_bytes)
 
-    # (just nu gör vi inget med decoded-bytes, men senare skickas de till modellen)
-    _ = decoded
+        predictions.append(
+            Prediction(
+                label=result["label"]
+            )
+        )
 
-    # 2) Få predictions (stub nu)
-    preds = predict_stub(len(req.images))
-
-    # 3) Skicka tillbaka svar i exakt format
-    return PredictResponse(predictions=preds, model_version=MODEL_VERSION)
+    return PredictResponse(
+        predictions=predictions,
+        model_version=MODEL_VERSION
+    )

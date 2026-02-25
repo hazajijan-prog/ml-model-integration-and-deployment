@@ -2,8 +2,12 @@ from typing import List
 import base64
 import re
 from fastapi import HTTPException
-from schemas import Prediction
-from utils.constants import MODEL_PATH
+from src.backend.schemas import Prediction
+from src.utils.constants import MODEL_PATH
+import torch
+from PIL import Image
+import io
+from torchvision import transforms
 
 CIFAR10_LABELS = [
     "airplane", "automobile", "bird", "cat", "deer",
@@ -11,6 +15,35 @@ CIFAR10_LABELS = [
 ]
 
 MODEL_VERSION = "stub-0.1"
+
+if not MODEL_PATH.exists():
+    raise RuntimeError("Model file not found. Run export_mofrl first.")
+
+model = torch.jit.load(MODEL_PATH)
+model.eval()
+
+preprocess = transforms.Compose([
+    transforms.Resize((32,32)),
+    transforms.ToTensor(),
+])
+
+def predict_image(image_bytes:bytes):
+    try:
+        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invaid image format")
+    
+    tensor = preprocess(image).unsqueeze(0)
+
+    with torch.no_grad():
+        outputs = model(tensor)
+        predicted_class = outputs.argmax(dim=1).item()
+
+    return {
+        "label": CIFAR10_LABELS[predicted_class],
+        "class_index":predicted_class,
+        "model_version": MODEL_VERSION
+    }
 
 DATA_URL_RE = re.compile(r"^data:image\/[a-zA-Z0-9.+-]+;base64,")
 
