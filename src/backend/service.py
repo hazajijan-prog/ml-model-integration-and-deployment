@@ -3,6 +3,7 @@ import base64
 import re
 from fastapi import HTTPException
 from schemas import Prediction
+from utils.constants import MODEL_PATH
 
 CIFAR10_LABELS = [
     "airplane", "automobile", "bird", "cat", "deer",
