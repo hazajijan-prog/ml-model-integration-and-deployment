@@ -1,7 +1,10 @@
-def main():
-    print("Hello from ml-model-integration-and-deployment!")
+from fastapi import FastAPI
+from src.backend.api import router
 
+app = FastAPI()
+app.include_router(router)
 
-if __name__ == "__main__":
-    print("Hello from main")
-    main()
+# def main():
+
+# if __name__ == "__main__":
+#     main()
