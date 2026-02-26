@@ -8,7 +8,7 @@ import torch
 from PIL import Image
 import io
 from torchvision import transforms
-from src.export_model import export_model
+
 
 CIFAR10_LABELS = [
     "airplane", "automobile", "bird", "cat", "deer",
@@ -18,9 +18,9 @@ CIFAR10_LABELS = [
 MODEL_VERSION = "stub-0.1"
 
 if not MODEL_PATH.exists():
-    export_model()
+    raise RuntimeError("Model file not found. Run export_model first.")
 
-model = torch.jit.load(MODEL_PATH)
+model = torch.jit.load(MODEL_PATH, map_location="cpu")
 model.eval()
 
 preprocess = transforms.Compose([
