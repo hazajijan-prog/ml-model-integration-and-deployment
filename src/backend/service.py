@@ -15,7 +15,7 @@ CIFAR10_LABELS = [
     "dog", "frog", "horse", "ship", "truck"
 ]
 
-MODEL_VERSION = "stub-0.1"
+MODEL_VERSION = "cnn-cifar10-v1.0"
 
 if not MODEL_PATH.exists():
     raise RuntimeError("Model file not found. Run export_model first.")
@@ -38,13 +38,16 @@ def predict_image(image_bytes:bytes):
 
     with torch.no_grad():
         outputs = model(tensor)
-        predicted_class = outputs.argmax(dim=1).item()
+        probs = torch.softmax(outputs, dim=1)
+        predicted_class = probs.argmax(dim=1).item()
+        probabilities = [round(float(p),4) for p in probs.squeeze()]
 
     return {
-        "label": CIFAR10_LABELS[predicted_class],
-        "class_index":predicted_class,
-        "model_version": MODEL_VERSION
-    }
+    "label": CIFAR10_LABELS[predicted_class],
+    "class_index": predicted_class,
+    "probabilities": probabilities,
+    "model_version": MODEL_VERSION
+}
 
 DATA_URL_RE = re.compile(r"^data:image\/[a-zA-Z0-9.+-]+;base64,")
 

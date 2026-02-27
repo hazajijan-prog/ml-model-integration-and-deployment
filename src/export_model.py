@@ -1,5 +1,5 @@
 import torch
-from src.model import SimpleClassifier
+from src.model import CNN
 from pathlib import Path
 
 
@@ -12,7 +12,7 @@ def export_model():
         raise RuntimeError("weights.pth not found. Train model first in K2.")
 
     # Skapa modellen
-    model = SimpleClassifier()
+    model = CNN()
 
     # Ladda tränade vikter
     model.load_state_dict(torch.load(weights_path, map_location="cpu"))
