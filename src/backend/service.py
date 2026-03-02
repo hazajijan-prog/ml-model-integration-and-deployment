@@ -58,7 +58,3 @@ def decode_image_b64(image_b64: str) -> bytes:
         return base64.b64decode(cleaned, validate=True)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid base64 image payload")
-
-
-def predict_stub(num_images: int) -> List[Prediction]:
-    pass
