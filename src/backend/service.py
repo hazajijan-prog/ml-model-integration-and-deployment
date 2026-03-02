@@ -8,11 +8,9 @@ Responsible for:
 - Returning structured prediction results
 """
 
-from typing import List
 import base64
 import re
 from fastapi import HTTPException
-from src.backend.schemas import Prediction
 from src.utils.constants import MODEL_PATH
 import torch
 from PIL import Image
