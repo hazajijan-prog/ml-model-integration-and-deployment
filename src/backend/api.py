@@ -1,26 +1,42 @@
+"""
+API layer for model inference.
+
+Defines HTTP endpoints and maps incoming requests
+to the service layer for prediction.
+"""
 from fastapi import APIRouter
 from src.backend.schemas import PredictRequest, PredictResponse, Prediction
 from src.backend.service import decode_image_b64, predict_image, MODEL_VERSION
 
+# Router instance for grouping prediction-related endpoints
 router = APIRouter()
 
 @router.post("/predict", response_model=PredictResponse)
-def predict(request: PredictRequest):
+def predict(request: PredictRequest) -> PredictResponse:
+    
+    """
+    Accepts one or more base64-encoded images and returns
+    predicted label and class probabilities.
+
+    Flow:
+    - Decode base64 image
+    - Run inference via service layer
+    - Map result to response schema
+    """
 
     predictions = []
 
-    print("Len of images in request:", len(request.images))
     for image_payload in request.images:
-        print("Processing image with size:", len(image_payload.image_b64))
+        # Decode incoming base64 image into raw bytes
         image_bytes = decode_image_b64(image_payload.image_b64)
+        # Run inference using the service layer
         result = predict_image(image_bytes)
-        
-        print("result prediction:", result["probabilities"])
 
+        # Map internal result to API response schema
         predictions.append(
             Prediction(
                 label=result["label"],
-        probabilities=result["probabilities"]
+                probabilities=result["probabilities"]
     )
 )
 
