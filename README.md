@@ -100,7 +100,33 @@ docker run -p 8000:8000 ml-api
 
 ### Access the API
 
-Go to `http://localhost:8000/docs` to explore and test the API. You can try out the `/predict` endpoint by sending base64-encoded images.
+Go to `http://localhost:8000/docs` to explore and test the API.  
+You can try out the `/predict` endpoint by sending base64-encoded images.
+
+### Testing with a Base64 image
+
+One simple way to test the endpoint is to convert an image to Base64.
+
+1. Go to https://www.base64-image.de/
+2. Upload an image (for example a CIFAR-10 image such as `dog_4_cifar10.png`)
+3. Copy the generated Base64 string.
+
+Then open the Swagger UI at:
+
+http://localhost:8000/docs
+
+Find the **POST /predict** endpoint and click **Try it out**.
+
+Paste the Base64 string into the request body:
+
+```json
+{
+  "images": [
+    {
+      "image_b64": "data:image/png;base64,<BASE64_STRING>"
+    }
+  ]
+}
 
 ---
 
